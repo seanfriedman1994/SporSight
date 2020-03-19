@@ -1,11 +1,19 @@
 import React from 'react';
 import {Platform, Text, View, ImageBackground, StyleSheet, Button, Alert, TouchableOpacity} from 'react-native';
+import Svg, { Circle } from "react-native-svg";
 
 
 const VideoOptionsScreen = props => {
     return (
         <View style={styles.screen}>
-            <Text>Video Options Screen</Text>
+        <Svg
+            height={400}
+            width={400}
+            viewBox="0 0 400 400"
+            fill="blue"
+            >
+            <Circle r={200} fill="green"/>
+            </Svg>               
         </View>
     );
 };
