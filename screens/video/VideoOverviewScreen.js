@@ -24,15 +24,21 @@ import { fetch, decodeJpeg } from "@tensorflow/tfjs-react-native";
 import Constants from "expo-constants";
 import Svg, { Circle, Line } from 'react-native-svg'
 
+// to do
+// video support
+// multiple poses support
+// enhance skeleton (enfore cutoff)
+// test out different estimation tools
+
 export default class VideoOverviewScreen extends React.Component {
   state = {
     image: null,
-    pose: null,
+    poses: null,
     isTFReady: false
   };
 
   render() {
-    let { image, pose } = this.state;
+    let { image, poses, loading, prepping, estimating } = this.state;
     return (
       <View
         style={{ height: "100%", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}
@@ -63,7 +69,7 @@ export default class VideoOverviewScreen extends React.Component {
                 style={{ width: 400, height: 400, position: "absolute", top: 0, bottom: 0, left: -200, right: 0 }}
               />              
             </View>
-            {pose && (
+            {poses && (
               <View>
                 <Svg
                   height={400}
@@ -79,11 +85,19 @@ export default class VideoOverviewScreen extends React.Component {
             
           </View>
         )}
-        {pose && (
+        {loading ? (
           <Text>
-            Confidence: {pose.score}
+            Loading...
           </Text>
-        )}
+        ) : prepping ? (
+          <Text>
+            Prepping...
+          </Text>     
+        ) : estimating ? (
+          <Text>
+            Estimating...
+          </Text>
+        ) : null}
       </View>
     );
   }
@@ -95,38 +109,42 @@ export default class VideoOverviewScreen extends React.Component {
 
   // dots
   renderJoints = () => {
-    const { image, pose } = this.state
-    return pose.keypoints.map((keypoint, index) => {
-      if (keypoint.score >= .8) {
-        return (
-          <Circle key={index} r={3} cx={(keypoint.position.x)*(400/image.width)} cy={keypoint.position.y*(400/image.height)} fill="white"/> 
-        )
-      }
+    const { image, poses } = this.state
+    return poses.map((pose) => {
+      return pose.keypoints.map((keypoint, index) => {
+        if (keypoint.score >= .8) {
+          return (
+            <Circle key={index} r={3} cx={(keypoint.position.x)*(400/image.width)} cy={keypoint.position.y*(400/image.height)} fill="white"/> 
+          )
+        }
+      })      
     })
   }
 
   // lines
   renderSkeleton = () => {
-    const { image, pose } = this.state
-    return skeletonPairs.map((pair, index) => {
-      return (
-        <Line 
-          key={index}
-          x1={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[0])).position.x)*(400/image.width)}
-          x2={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[1])).position.x)*(400/image.width)}
-          y1={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[0])).position.y)*(400/image.height)}
-          y2={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[1])).position.y)*(400/image.height)}
-          stroke="white"
-          strokeWidth="2"
-        />
-      )
+    const { image, poses } = this.state
+    return poses.map((pose) => {
+      return skeletonPairs.map((pair, index) => {
+        return (
+          <Line 
+            key={index}
+            x1={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[0])).position.x)*(400/image.width)}
+            x2={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[1])).position.x)*(400/image.width)}
+            y1={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[0])).position.y)*(400/image.height)}
+            y2={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[1])).position.y)*(400/image.height)}
+            stroke="white"
+            strokeWidth="2"
+          />
+        )
+      })      
     })
   }
 
   clear = () => {
     this.setState({
       image: null,
-      pose: null
+      poses: null
     })
   }
 
@@ -161,14 +179,42 @@ export default class VideoOverviewScreen extends React.Component {
   };
 
   estimate = async () => {
-    const net = await posenet.load();
-    const response = await fetch(this.state.image.uri, {}, { isBinary: true });
-    const imageData = await response.arrayBuffer();
-    const imageTensor = this.imageToTensor(imageData)
-    const pose = await net.estimateSinglePose(imageTensor);
     this.setState({
-      pose
-    });
+      loading: true
+    }, async () => {
+      console.log("1")
+      const net = await posenet.load({
+          architecture: 'ResNet50',
+          outputStride: 32,
+          quantBytes: 1 
+      });
+      
+      this.setState({
+        loading: false,
+        prepping: true
+      }, async() => {
+        console.log("2")
+        const response = await fetch(this.state.image.uri, {}, { isBinary: true });
+        const imageData = await response.arrayBuffer();
+        const imageTensor = this.imageToTensor(imageData)        
+      
+        this.setState({
+          prepping: false,
+          estimating: true
+        }, async () => {
+          console.log("3")
+          const poses = await net.estimateMultiplePoses(imageTensor);
+          console.log(poses)
+          this.setState({
+            estimating: false,
+            poses
+          });          
+        })      
+      })
+    })
+
+
+
   };
 
   // needed for posenet calcs

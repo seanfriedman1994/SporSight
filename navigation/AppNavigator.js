@@ -11,8 +11,7 @@ const AppNavigator = props => {
 
     return (
         <NavigationContainer>
-            {isAuth && <Navigator />}
-            {!isAuth && <AuthNavigator />}
+            <Navigator />
         </NavigationContainer>
     );
 };
