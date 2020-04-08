@@ -23,6 +23,8 @@ import * as jpeg from 'jpeg-js'
 import { fetch, decodeJpeg } from "@tensorflow/tfjs-react-native";
 import Constants from "expo-constants";
 import Svg, { Circle, Line } from 'react-native-svg'
+import { FontAwesome } from '@expo/vector-icons';
+import CameraPage from './CameraPage';
 
 // to do
 // video support
@@ -32,6 +34,8 @@ import Svg, { Circle, Line } from 'react-native-svg'
 
 export default class VideoOverviewScreen extends React.Component {
   state = {
+    isCameraOpen: false,
+    canUseCamera: false,
     image: null,
     poses: null,
     isTFReady: false
@@ -39,67 +43,80 @@ export default class VideoOverviewScreen extends React.Component {
 
   render() {
     let { image, poses, loading, prepping, estimating } = this.state;
-    return (
-      <View
-        style={{ height: "100%", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}
-      >
+
+    return this.state.isCameraOpen ? <CameraPage closeCameraPage={() => {
+      this.setState(oldState => ({ ...oldState, isCameraOpen: false }));
+    }} /> : (
+
         <View
-          style={{ width: "100%", flexDirection: "row", justifyContent: "space-around", alignItems: "flex-start", paddingVertical: 10 }}
+          style={{ height: "100%", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}
         >
-          <Button
-            title="Pick an image"
-            onPress={this.pickImage}
-          />
-          <Button 
-            disabled={!this.state.image}
-            title="Estimate" 
-            onPress={this.estimate} 
-          />
-          <Button 
-            disabled={!this.state.image}
-            title="Clear" 
-            onPress={this.clear} 
-          />
-        </View>
-        {image && (
-          <View style={{flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
-            <View>
-              <Image
-                source={{ uri: image.uri }}
-                style={{ width: 400, height: 400, position: "absolute", top: 0, bottom: 0, left: -200, right: 0 }}
-              />              
-            </View>
-            {poses && (
-              <View>
-                <Svg
-                  height={400}
-                  width={400}
-                  viewBox="0 0 400 400"
-                  fill="blue"
-                >
-                  {this.renderJoints()}
-                  {this.renderSkeleton()}
-                </Svg>  
-              </View>
-            )}
-            
+          <View
+            style={{ width: "100%", flexDirection: "row", justifyContent: "space-around", alignItems: "flex-start", paddingVertical: 10 }}
+          >
+            <Button
+              title="Pick Image"
+              onPress={this.pickImage} // Todo: Don't know how to fix task bar spacing on app. 
+            />
+            <Button
+              title="Open Camera"
+              onPress={this.openCamera}
+            />
+            <Button
+              disabled={!this.state.image}
+              title="Estimate"
+              onPress={this.estimate}
+            />
+            <Button
+              disabled={!this.state.image}
+              title="Clear"
+              onPress={this.clear}
+            />
           </View>
-        )}
-        {loading ? (
-          <Text>
-            Loading...
-          </Text>
-        ) : prepping ? (
-          <Text>
-            Prepping...
-          </Text>     
-        ) : estimating ? (
-          <Text>
-            Estimating...
-          </Text>
-        ) : null}
-      </View>
-    );
+          <View style={{ flex: 1 }}>
+            <Camera style={{ flex: 1 }} type={this.state.cameraType}>
+
+            </Camera>
+          </View>
+          {image && (
+            <View style={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+              <View>
+                <Image
+                  source={{ uri: image.uri }}
+                  style={{ width: 400, height: 400, position: "absolute", top: 0, bottom: 0, left: -200, right: 0 }}
+                />
+              </View>
+              {poses && (
+                <View>
+                  <Svg
+                    height={400}
+                    width={400}
+                    viewBox="0 0 400 400"
+                    fill="blue"
+                  >
+                    {this.renderJoints()}
+                    {this.renderSkeleton()}
+                  </Svg>
+                </View>
+              )}
+
+            </View>
+          )}
+          {loading ? (
+            <Text>
+              Loading...
+            </Text>
+          ) : prepping ? (
+            <Text>
+              Prepping...
+            </Text>
+          ) : estimating ? (
+            <Text>
+              Estimating...
+            </Text>
+          ) : null}
+        </View>
+      );
   }
 
   componentDidMount() {
@@ -114,10 +131,10 @@ export default class VideoOverviewScreen extends React.Component {
       return pose.keypoints.map((keypoint, index) => {
         if (keypoint.score >= .8) {
           return (
-            <Circle key={index} r={3} cx={(keypoint.position.x)*(400/image.width)} cy={keypoint.position.y*(400/image.height)} fill="white"/> 
+            <Circle key={index} r={3} cx={(keypoint.position.x) * (400 / image.width)} cy={keypoint.position.y * (400 / image.height)} fill="white" />
           )
         }
-      })      
+      })
     })
   }
 
@@ -127,17 +144,17 @@ export default class VideoOverviewScreen extends React.Component {
     return poses.map((pose) => {
       return skeletonPairs.map((pair, index) => {
         return (
-          <Line 
+          <Line
             key={index}
-            x1={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[0])).position.x)*(400/image.width)}
-            x2={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[1])).position.x)*(400/image.width)}
-            y1={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[0])).position.y)*(400/image.height)}
-            y2={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[1])).position.y)*(400/image.height)}
+            x1={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[0])).position.x) * (400 / image.width)}
+            x2={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[1])).position.x) * (400 / image.width)}
+            y1={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[0])).position.y) * (400 / image.height)}
+            y2={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[1])).position.y) * (400 / image.height)}
             stroke="white"
             strokeWidth="2"
           />
         )
-      })      
+      })
     })
   }
 
@@ -148,15 +165,18 @@ export default class VideoOverviewScreen extends React.Component {
     })
   }
 
-  // required for iOS
+
+  // Added permission for camera as well as camera roll.
   getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status !== "granted") {
-        alert("Sorry, we need camera roll permissions to make this work!");
-      }
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL, Permissions.CAMERA);
+    if (status !== "granted") {
+      alert("Sorry, we need camera & camera roll permissions to make this work!");
+    }
+    else {
+      this.setState(oldState => ({ ...oldState, canUseCamera: true }));
     }
   };
+
 
   readyTF = async () => {
     await tf.ready();
@@ -178,26 +198,30 @@ export default class VideoOverviewScreen extends React.Component {
     }
   };
 
+  openCamera = async () => {
+    this.setState(oldState => ({ ...oldState, isCameraOpen: true }));
+  };
+
   estimate = async () => {
     this.setState({
       loading: true
     }, async () => {
       console.log("1")
       const net = await posenet.load({
-          architecture: 'ResNet50',
-          outputStride: 32,
-          quantBytes: 1 
+        architecture: 'ResNet50',
+        outputStride: 32,
+        quantBytes: 1
       });
-      
+
       this.setState({
         loading: false,
         prepping: true
-      }, async() => {
+      }, async () => {
         console.log("2")
         const response = await fetch(this.state.image.uri, {}, { isBinary: true });
         const imageData = await response.arrayBuffer();
-        const imageTensor = this.imageToTensor(imageData)        
-      
+        const imageTensor = this.imageToTensor(imageData)
+
         this.setState({
           prepping: false,
           estimating: true
@@ -208,8 +232,8 @@ export default class VideoOverviewScreen extends React.Component {
           this.setState({
             estimating: false,
             poses
-          });          
-        })      
+          });
+        })
       })
     })
 
