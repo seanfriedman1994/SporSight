@@ -12,7 +12,6 @@ import AuthScreen from '../screens/user/AuthScreen';
 import VideoOverviewScreen, { screenOptions as VideoOverviewScreenOptions } from '../screens/video/VideoOverviewScreen';
 import VideoOptionsScreen, { screenOptions as VideoOptionsScreenOptions } from '../screens/video/VideoOptionsScreen';
 import Colors from '../constants/Colors';
-import LandingPage from '../screens/LandingPage';
 import * as authActions from '../screens/actions/auth';
 
 const defaultNavOptions = {

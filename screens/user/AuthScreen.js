@@ -62,7 +62,6 @@ const AuthScreen = props => {
     setIsLoading(true);
     
     let action;
-
     let response;
 
     try
