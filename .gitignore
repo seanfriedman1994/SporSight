@@ -1,2 +1,6 @@
-node_modules/**/*
+node_modules/*
+!node_modules/azure-ad-graph-expo/
+node_modules/azure-ad-graph-expo/*
+!node_modules/azure-ad-graph-expo/AzureADGraph.js
+
 .expo/*

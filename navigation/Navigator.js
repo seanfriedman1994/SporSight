@@ -95,10 +95,7 @@ const AuthStackNavigator = createStackNavigator();
 
 export const AuthNavigator = () => {
     return (
-        <AuthStackNavigator.Navigator initialRouteName = "LandingPage" screenOptions={{headerShown: false}}>
-            <AuthStackNavigator.Screen 
-                name="LandingPage"
-                component={LandingPage} />
+        <AuthStackNavigator.Navigator initialRouteName = "Auth" screenOptions={{headerShown: false}}>
             <AuthStackNavigator.Screen 
                 name="Auth"
                 component={AuthScreen}/>

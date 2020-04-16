@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+
 import {
   View,
   Text,
@@ -43,6 +44,7 @@ export default class VideoOverviewScreen extends React.Component {
       <View
         style={{ height: "100%", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}
       >
+
         <View
           style={{ width: "100%", flexDirection: "row", justifyContent: "space-around", alignItems: "flex-start", paddingVertical: 10 }}
         >

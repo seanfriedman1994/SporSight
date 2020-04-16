@@ -16,7 +16,7 @@ import * as AuthActions from '../screens/actions/auth';
 import { NavigationContainer } from '@react-navigation/native';
 
 const LandingPage = props => {
-    const dispatch = useDispatch();
+    /* const dispatch = useDispatch();
 
     useEffect(() => {
         const tryLogin = async () => {
@@ -40,7 +40,7 @@ const LandingPage = props => {
         };
 
         tryLogin();
-    }, [dispatch]);
+    }, [dispatch]); */
 
     return (
         <View style={styles.screen}>
@@ -55,7 +55,7 @@ const LandingPage = props => {
                         style={styles.button}
                         onPress={() => props.navigation.navigate('Auth')}
                     >
-                        <Text style={styles.buttonText}>Login / Sign Up</Text>
+                        <Text style={styles.buttonText}>Login</Text>
                     </TouchableOpacity>
                 </View>
             </ImageBackground> 

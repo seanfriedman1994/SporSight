@@ -1,206 +1,148 @@
 import React, { useState, useEffect, useReducer, useCallback } from 'react';
-import {
-  ScrollView,
-  View,
-  ImageBackground,
-  KeyboardAvoidingView,
-  StyleSheet,
-  Button,
-  ActivityIndicator,
-  Alert,
-  Text,
-  TouchableOpacity
-} from 'react-native';
+import {AsyncStorage, ScrollView,View,ImageBackground,KeyboardAvoidingView,StyleSheet,Button,ActivityIndicator,Alert,Text,TouchableOpacity} from 'react-native';
 import { useDispatch } from 'react-redux';
-
+import {CLIENT_ID, TENANT_ID} from 'react-native-dotenv';
 import Input from '../../components/UI/Input';
 import Card from '../../components/UI/Card';
 import Colors from '../../constants/Colors';
 import * as authActions from '../actions/auth';
 
-const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
-
-const formReducer = (state, action) => {
-  if (action.type === FORM_INPUT_UPDATE) {
-    const updatedValues = {
-      ...state.inputValues,
-      [action.input]: action.value
-    };
-    const updatedValidities = {
-      ...state.inputValidities,
-      [action.input]: action.isValid
-    };
-    let updatedFormIsValid = true;
-    for (const key in updatedValidities) {
-      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
-    }
-    return {
-      formIsValid: updatedFormIsValid,
-      inputValidities: updatedValidities,
-      inputValues: updatedValues
-    };
-  }
-  return state;
-};
+import { AuthSession } from 'expo';
+import { openAuthSession } from 'azure-ad-graph-expo';
+import { render } from 'react-dom';
 
 const AuthScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
-  const [isSignup, setIsSignup] = useState(false);
+
   const dispatch = useDispatch();
 
-  const [formState, dispatchFormState] = useReducer(formReducer, {
-    inputValues: {
-      email: '',
-      password: ''
-    },
-    inputValidities: {
-      email: false,
-      password: false
-    },
-    formIsValid: false
-  });
+  useEffect(() => {
+    const tryLogin = async () => 
+    {
+      //look for User Data in Storage
+      const userData = await AsyncStorage.getItem('userData');
+
+      if(userData)
+      {
+        //create object from storage string
+        const transformedData = JSON.parse(userData);
+
+        //deconstruct the JSON object
+        const {userId, displayName, token, refreshToken, expiryDate} = transformedData;
+
+        //check if token is valid
+        const expirationDate = new Date(expiryDate);
+
+        if(expirationDate <= new Date() || !userId || !token || !refreshToken)
+        {
+          //invalid user object
+        }
+        else
+        {
+          //valid user object, already signed in.
+          dispatch(authActions.authenticate(userId, displayName, token, refreshToken, expiryTime));
+        }
+      }
+
+    };
+
+    tryLogin();
+  }, [dispatch]);
 
   useEffect(() => {
-    if (error) {
-      Alert.alert('An Error Occurred!', error, [{ text: 'Okay' }]);
+    if(error) {
+      Alert.alert('An Error Occured.', error , [{text: 'Okay'}]);
     }
-  }, [error]);
+  }, [error]
+  );
 
-  const authHandler = async () => {
-    let action;
-    if (isSignup) {
-      action = authActions.signup(
-        formState.inputValues.email,
-        formState.inputValues.password
-      );
-    } else {
-      action = authActions.login(
-        formState.inputValues.email,
-        formState.inputValues.password
-      );
-    }
+  const authHandler = async() => {
     setError(null);
     setIsLoading(true);
-    try {
-      await dispatch(action);
-    } catch (err) {
-      setError(err.message);
-      setIsLoading(false);
+    
+    let action;
+
+    let response;
+
+    try
+    {
+      action = await authActions.loginAsync();
+      response = await dispatch(action);
     }
+    catch(err)
+    {
+      setError(err.message);
+    }
+   
+    setIsLoading(false);
   };
 
-  const inputChangeHandler = useCallback(
-    (inputIdentifier, inputValue, inputValidity) => {
-      dispatchFormState({
-        type: FORM_INPUT_UPDATE,
-        value: inputValue,
-        isValid: inputValidity,
-        input: inputIdentifier
-      });
-    },
-    [dispatchFormState]
-  );
-
   return (
-    <KeyboardAvoidingView
-      behavior="padding"
-      keyboardVerticalOffset={50}
-      style={styles.screen}
-    >
-     <ImageBackground source={require('../../assets/ball_field.jpg')} 
-            style={styles.image}
-            >
-        <Card style={styles.authContainer}>
-          <ScrollView>
-            <Input
-              id="email"
-              label="E-Mail"
-              keyboardType="email-address"
-              required
-              email
-              autoCapitalize="none"
-              errorText="Please enter a valid email address."
-              onInputChange={inputChangeHandler}
-              initialValue=""
-            />
-            <Input
-              id="password"
-              label="Password"
-              keyboardType="default"
-              secureTextEntry
-              required
-              minLength={5}
-              autoCapitalize="none"
-              errorText="Please enter a valid password."
-              onInputChange={inputChangeHandler}
-              initialValue=""
-            />
-            <View style={styles.buttonContainer}>
-            {isLoading ? (
-              <ActivityIndicator size="small" color={Colors.Primary} />
-              ) : (
-                <TouchableOpacity 
-                        style={styles.button}
-                        onPress={authHandler}
-                    >
-                      { isSignup ?  <Text style={styles.buttonText}>Sign Up</Text> : <Text style={styles.buttonText}>Login</Text> }
-                </TouchableOpacity>
-            )}
-            </View>
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => {
-                          setIsSignup(prevState => !prevState);}}
-                    >
-                      <Text style={styles.buttonText}>Switch to {isSignup ? 'Login' : 'Sign Up'}</Text>
-                </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </Card>
-      </ImageBackground>
-    </KeyboardAvoidingView>
-  );
+              <View style={styles.screen}>
+                <ImageBackground source={require('../../assets/ball_field.jpg')} 
+                  style={styles.image}
+                >
+                  <View style={styles.header}>
+                    <Text style={styles.text}>SporSight Sports Analytics</Text>
+                  </View>
+    
+                  <View>
+                        {isLoading ? <ActivityIndicator size='large' color={Colors.Secondary}/> : 
+                            <TouchableOpacity  style={styles.button} onPress={authHandler}>
+                              <Text style={styles.buttonText}>Login</Text>
+                            </TouchableOpacity>
+                        }
+                  </View>
+    
+                </ImageBackground> 
+              </View>
+        );
 };
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1
-  },
-  gradient: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  authContainer: {
-    width: '80%',
-    maxWidth: 400,
-    maxHeight: 400,
-    padding: 20
-  },
-  buttonContainer: {
-    marginTop: 10,
-  },
-  button: {
-    backgroundColor: Colors.Secondary,
-    borderColor: Colors.Secondary,
-    borderRadius:10,
-    borderWidth: 1,
-    padding: 10
-  },
-  buttonText: {
+      flex: 1
+    },
+    image: {
+      width: '100%',
+      height: '100%',
+      alignItems: 'center',
+      justifyContent: 'space-around'
+    },
+    header: {
+        width: '80%',
+        height: 100,
+        alignContent: 'center'
+    },
+    text: {
+        fontFamily: 'roboto-bold',
+        fontSize: 24,
+        textAlign:'center'
+    },
+    button: {
+      marginTop:200,
+      paddingTop:15,
+      paddingBottom:15,
+      paddingHorizontal:30,
+      backgroundColor: Colors.Secondary,
+      borderRadius:10,
+      borderWidth: 1,
+      borderColor: Colors.Secondary
+    },
+    buttonText: {
+        padding: 4,
+        textAlign: 'center',
+        fontFamily: 'roboto-bold',
+        fontSize: 18,
+        color: 'black'
+    },
+    errorText: {
       textAlign: 'center',
-      fontFamily: 'roboto-bold',
-      fontSize: 18,
-      color: 'black'
-  }
+      fontFamily: 'roboto',
+      fontSize: 14,
+      color: Colors.Error
+    }
 });
 
 export default AuthScreen;
