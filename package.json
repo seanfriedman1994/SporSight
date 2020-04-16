@@ -18,7 +18,7 @@
     "@tensorflow/tfjs": "^1.5.2",
     "@tensorflow/tfjs-react-native": "^0.2.3",
     "async-storage": "^0.1.0",
-    "azure-ad-graph-expo": "^1.1.2",
+    "azure-ad-graph-expo": "https://github.com/seanfriedman1994/azure-ad-graph-expo.git",
     "expo": "~36.0.0",
     "expo-camera": "^8.0.0",
     "expo-cli": "^3.17.15",
