@@ -50,16 +50,19 @@ export default class VideoEstimationScreen extends React.Component {
         >
           <Button
             title="Pick an image"
+            color={Colors.Primary}
             onPress={this.pickImage}
           />
           <Button 
             disabled={!this.state.image}
             title="Estimate" 
+            color={Colors.Primary}
             onPress={this.estimate} 
           />
           <Button 
             disabled={!this.state.image}
             title="Clear" 
+            color={Colors.Primary}
             onPress={this.clear} 
           />
         </View>
