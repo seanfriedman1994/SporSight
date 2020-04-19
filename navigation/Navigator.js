@@ -4,12 +4,14 @@ import {
   createDrawerNavigator,
   DrawerItemList
 } from '@react-navigation/drawer';
-import { Platform, SafeAreaView, Button, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Platform, SafeAreaView, Button, View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { Ionicons, FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
 
 import AuthScreen from '../screens/user/AuthScreen';
-import VideoOverviewScreen, { screenOptions as VideoOverviewScreenOptions } from '../screens/video/VideoOverviewScreen';
+import VideoEstimationScreen, { screenOptions as VideoEstimationScreenOptions } from '../screens/video/VideoEstimationScreen';
+import VideoOverviewScreen, {screenOptions as VideoOverviewScreenOptions} from '../screens/video/VideoOverviewScreen';
 import VideoOptionsScreen, { screenOptions as VideoOptionsScreenOptions } from '../screens/video/VideoOptionsScreen';
 import Colors from '../constants/Colors';
 import * as authActions from '../screens/actions/auth';
@@ -31,11 +33,11 @@ const VideoStackNavigator = createStackNavigator();
 
 export const VideoNavigator = () => {
     return (
-        <VideoStackNavigator.Navigator screenOptions={defaultNavOptions}>
+        <VideoStackNavigator.Navigator initialRouteName = "VideoEstimation" screenOptions={defaultNavOptions}>
             <VideoStackNavigator.Screen 
-                name="VideoOverview" 
-                component={VideoOverviewScreen}
-                options={VideoOverviewScreenOptions} 
+                name="VideoEstimation" 
+                component={VideoEstimationScreen}
+                options={VideoEstimationScreenOptions} 
             />
             <VideoStackNavigator.Screen 
                 name="VideoOptions" 
@@ -43,6 +45,20 @@ export const VideoNavigator = () => {
                 options={VideoOptionsScreenOptions} 
             />
         </VideoStackNavigator.Navigator>
+    );
+};
+
+const VideoOverviewStackNavigator = createStackNavigator();
+
+export const VideoOverviewNavigator = () => {
+    return (
+        <VideoOverviewStackNavigator.Navigator initialRouteName = "VideoOverview" screenOptions={defaultNavOptions}>
+            <VideoOverviewStackNavigator.Screen 
+                name="VideoOverview" 
+                component={VideoOverviewScreen}
+                options={VideoOverviewScreenOptions} 
+            />
+        </VideoOverviewStackNavigator.Navigator>
     );
 };
 
@@ -55,33 +71,57 @@ export const Navigator = () => {
         <DrawerNavigator.Navigator
             drawerContent={props => {
                 return (
-                    <View style={{ flex: 1, paddingTop: 20}}>
-                        <SafeAreaView forceInset={{ top: 'always', horizontal: 'never' }}>
+                    <View style={{ flex: 1, paddingTop: 20}} backgroundColor={Colors.Primary}>
+                        <SafeAreaView forceInset={{ top: 'always', horizontal: 'never' }} >
                             <DrawerItemList {...props} />
-                            <Button
+                            {/* <Button
                                 title="Logout"
-                                color={Colors.Primary}
+                                color={Colors.Secondary}
                                 onPress={() => {
                                     dispatch(authActions.logout());
                                 }}
-                            />
+                                
+                            /> */}
+                            <TouchableOpacity  
+                                style={styles.button}
+                                onPress={() => {
+                                    dispatch(authActions.logout());
+                                }}>
+                              <Text style={styles.buttonText}>Logout</Text>
+                            </TouchableOpacity>
                         </SafeAreaView>
                     </View>
                 );
             } }
             drawerContentOptions={{
-                activeTintColor: Colors.Primary
+                activeTintColor: Colors.Secondary,
+                inactiveTintColor: 'white'
             }}
         >
-            <DrawerNavigator.Screen 
-                name="Video" 
-                component={VideoNavigator} 
+             <DrawerNavigator.Screen 
+                name="My Videos" 
+                component={VideoOverviewNavigator} 
                 options={{
+                    style: styles.navItem,
                     drawerIcon: props => (
                         <Ionicons
                             name={Platform.OS == 'android' ? 'md-videocam' : 'ios-videocam'}
                             size={23}
-                            color={Colors.Secondary}
+                            color={props.focused ? Colors.Secondary : 'white'}
+                        />
+                    )
+                }}
+            />
+            <DrawerNavigator.Screen 
+                name="Video Estimation" 
+                component={VideoNavigator} 
+                options={{
+                    style: styles.navItem,
+                    drawerIcon: props => (
+                        <FontAwesome5
+                            name="walking"
+                            size={23}
+                            color={props.focused ? Colors.Secondary : 'white'}
                         />
                     )
                 }}
@@ -101,3 +141,48 @@ export const AuthNavigator = () => {
         </AuthStackNavigator.Navigator>
     );
 };
+
+
+const styles = StyleSheet.create({
+    screen: {
+        flex: 1
+      },
+      image: {
+        width: '100%',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-around'
+      },
+      header: {
+          width: '80%',
+          height: 100,
+          alignContent: 'center'
+      },
+      text: {
+          fontFamily: 'roboto-bold',
+          fontSize: 24,
+          textAlign:'center'
+      },
+      button: {
+        paddingTop:18,
+        paddingBottom:12,
+        paddingHorizontal:30,
+      },
+      buttonText: {
+          padding: 4,
+          textAlign: 'center',
+          fontFamily: 'roboto',
+          fontSize: 16,
+          color: Colors.Secondary
+      },
+      navItem: {
+        fontFamily: 'roboto',
+        fontSize: 16
+    },
+      errorText: {
+        textAlign: 'center',
+        fontFamily: 'roboto',
+        fontSize: 14,
+        color: Colors.Error
+      }
+  });
