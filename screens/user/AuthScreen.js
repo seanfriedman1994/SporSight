@@ -34,7 +34,7 @@ const AuthScreen = props => {
         //check if token is valid
         const expirationDate = new Date(expiryDate);
 
-        if(expirationDate <= new Date() || !userId || !token || !refreshToken)
+        if(expirationDate <= new Date() || !userId || !token)
         {
           //invalid user object
         }
