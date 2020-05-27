@@ -99,7 +99,7 @@ export const Navigator = () => {
             }}
         >
              <DrawerNavigator.Screen 
-                name="My Videos" 
+                name="Video Annotation" 
                 component={VideoOverviewNavigator} 
                 options={{
                     style: styles.navItem,
