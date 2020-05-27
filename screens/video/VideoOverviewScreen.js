@@ -74,9 +74,6 @@ export default class VideoOverviewScreen extends React.Component {
             />
           </View>
           <View style={{ flex: 1 }}>
-            <Camera style={{ flex: 1 }} type={this.state.cameraType}>
-
-            </Camera>
           </View>
           {image && (
             <View style={{ flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
