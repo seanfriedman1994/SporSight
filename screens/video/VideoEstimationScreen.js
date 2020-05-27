@@ -25,6 +25,9 @@ import { fetch, decodeJpeg } from "@tensorflow/tfjs-react-native";
 import Constants from "expo-constants";
 import Svg, { Circle, Line } from 'react-native-svg'
 
+import { FontAwesome } from '@expo/vector-icons';
+import CameraPage from './CameraPage';
+
 // to do
 // video support
 // multiple poses support
@@ -33,6 +36,8 @@ import Svg, { Circle, Line } from 'react-native-svg'
 
 export default class VideoEstimationScreen extends React.Component {
   state = {
+    isCameraOpen: false,
+    canUseCamera: false,
     image: null,
     poses: null,
     isTFReady: false
@@ -40,7 +45,11 @@ export default class VideoEstimationScreen extends React.Component {
 
   render() {
     let { image, poses, loading, prepping, estimating } = this.state;
-    return (
+
+    return this.state.isCameraOpen ? <CameraPage closeCameraPage={() => {
+      this.setState(oldState => ({ ...oldState, isCameraOpen: false }));
+      }} /> : (
+
       <View
         style={{ height: "100%", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }}
       >
@@ -53,6 +62,10 @@ export default class VideoEstimationScreen extends React.Component {
             color={Colors.Primary}
             onPress={this.pickImage}
           />
+          <Button
+              title="Open Camera"
+              onPress={this.openCamera}
+            />
           <Button 
             disabled={!this.state.image}
             title="Estimate" 
@@ -153,13 +166,23 @@ export default class VideoEstimationScreen extends React.Component {
     })
   }
 
-  // required for iOS
+  // // required for iOS
+  // getPermissionAsync = async () => {
+  //   if (Constants.platform.ios) {
+  //     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+  //     if (status !== "granted") {
+  //       alert("Sorry, we need camera roll permissions to make this work!");
+  //     }
+  //   }
+  // };
+
   getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status !== "granted") {
-        alert("Sorry, we need camera roll permissions to make this work!");
-      }
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL, Permissions.CAMERA);
+    if (status !== "granted") {
+      alert("Sorry, we need camera & camera roll permissions to make this work!");
+    }
+    else {
+      this.setState(oldState => ({ ...oldState, canUseCamera: true }));
     }
   };
 
@@ -181,6 +204,10 @@ export default class VideoEstimationScreen extends React.Component {
     if (!result.cancelled) {
       this.setState({ image: result });
     }
+  };
+
+  openCamera = async () => {
+    this.setState(oldState => ({ ...oldState, isCameraOpen: true }));
   };
 
   estimate = async () => {
