@@ -6,7 +6,7 @@ import * as Permissions from 'expo-permissions';
 import { FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
-import CameraPage from '../screens/video/CameraPage';
+
 
 
 class CameraPage extends Component {
@@ -61,7 +61,7 @@ class CameraPage extends Component {
             MediaLibrary.saveToLibraryAsync(video.uri);
             console.log('Video', video);
 
-            
+            // need to save a video and somehow pass it to overviewScreen
         }
     }
 

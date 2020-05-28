@@ -3,6 +3,7 @@ import { View, Platform, StyleSheet, Dimensions } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButton from "../../components/UI/HeaderButton";
 import { Video } from 'expo-av';
+//import CameraPage from '../screens/video/CameraPage';
 
 
 // import SampleVideo from '../../assets/sample_video/IMG-2761.MP4'
