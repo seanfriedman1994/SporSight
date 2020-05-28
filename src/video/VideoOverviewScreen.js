@@ -1,11 +1,11 @@
 import React from "react";
 import { View, Platform, StyleSheet, Dimensions } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
-import HeaderButton from "../../components/UI/HeaderButton";
+import HeaderButton from "../shared/components/HeaderButton";
 import { Video } from 'expo-av';
 
 
-// import SampleVideo from '../../assets/sample_video/IMG-2761.MP4'
+// import SampleVideo from '../../../assets/sample_video/IMG-2761.MP4'
 const { width, height } = Dimensions.get('window');
 const VideoOverviewScreen = props => {
   return(
