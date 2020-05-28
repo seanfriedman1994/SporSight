@@ -4,9 +4,8 @@ import { Provider } from 'react-redux';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import ReduxThunk from 'redux-thunk';
-import Header from './components/UI/Header';
 
-import authReducer from './screens/reducers/auth';
+import authReducer from './reducers/auth';
 import AppNavigator from './navigation/AppNavigator';
 
 const rootReducer = combineReducers({
@@ -28,8 +27,8 @@ export default function App() {
 
   if(!fontLoaded) {
     return (
-      <AppLoading 
-        startAsync={fetchFonts} 
+      <AppLoading
+        startAsync={fetchFonts}
         onFinish={() => {
           setFontLoaded(true);
         }}
@@ -42,4 +41,3 @@ export default function App() {
     </Provider>
   );
 }
-
