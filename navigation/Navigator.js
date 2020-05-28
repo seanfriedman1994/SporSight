@@ -13,6 +13,7 @@ import AuthScreen from '../screens/user/AuthScreen';
 import VideoEstimationScreen, { screenOptions as VideoEstimationScreenOptions } from '../screens/video/VideoEstimationScreen';
 import VideoOverviewScreen, {screenOptions as VideoOverviewScreenOptions} from '../screens/video/VideoOverviewScreen';
 import VideoOptionsScreen, { screenOptions as VideoOptionsScreenOptions } from '../screens/video/VideoOptionsScreen';
+import CameraPage, { screenOptions as CameraPageOptions } from '../screens/video/CameraPage';
 import Colors from '../constants/Colors';
 import * as authActions from '../screens/actions/auth';
 
@@ -52,11 +53,16 @@ const VideoOverviewStackNavigator = createStackNavigator();
 
 export const VideoOverviewNavigator = () => {
     return (
-        <VideoOverviewStackNavigator.Navigator initialRouteName = "VideoOverview" screenOptions={defaultNavOptions}>
+        <VideoOverviewStackNavigator.Navigator initialRouteName = "CameraPage" screenOptions={defaultNavOptions}>
             <VideoOverviewStackNavigator.Screen 
                 name="VideoOverview" 
                 component={VideoOverviewScreen}
                 options={VideoOverviewScreenOptions} 
+            />
+             <VideoStackNavigator.Screen 
+                name="CameraPage" 
+                component={CameraPage}
+                options={CameraPageOptions} 
             />
         </VideoOverviewStackNavigator.Navigator>
     );

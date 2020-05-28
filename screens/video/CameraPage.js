@@ -6,6 +6,7 @@ import * as Permissions from 'expo-permissions';
 import { FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
+import CameraPage from '../screens/video/CameraPage';
 
 
 class CameraPage extends Component {
@@ -52,12 +53,15 @@ class CameraPage extends Component {
         }
     }
 
+    // Route the taken video directly to open on the videoOverviewScreen
     takeVideo = async () => {
         if (this.camera) {
             this.setState(oldState => ({...oldState, isRecording: true}));
             let video = await this.camera.recordAsync();
             MediaLibrary.saveToLibraryAsync(video.uri);
             console.log('Video', video);
+
+            
         }
     }
 
@@ -102,7 +106,8 @@ class CameraPage extends Component {
                 <View style={{ flex: 1 }}>
                     <Camera style={{ flex: 1 }} type={this.state.cameraType} ref={ref => { this.camera = ref }}>
                         <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", margin: 30 }}>
-                            <TouchableOpacity
+                             {/* Back button serves no purpose now because cameraPage is the first screen to open. */}
+                            {/* <TouchableOpacity
                                 style={{
                                     alignItems: 'center',
                                     backgroundColor: 'transparent'
@@ -112,7 +117,7 @@ class CameraPage extends Component {
                                     name="arrow-left"
                                     style={{ color: "#fff", fontSize: 40 }}
                                 />
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
                             <TouchableOpacity
                                 style={{
                                     alignItems: 'center',
