@@ -5,7 +5,8 @@
 		"android": "expo start --android",
 		"ios": "expo start --ios",
 		"web": "expo start --web",
-		"eject": "expo eject"
+		"eject": "expo eject",
+		"format:all": "prettier --write ./src/**/*.{js,jsx,json,ts,md} ./package.json"
 	},
 	"dependencies": {
 		"@expo/vector-icons": "^10.0.6",
