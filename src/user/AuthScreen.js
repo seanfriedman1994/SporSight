@@ -2,9 +2,7 @@ import React, { useState, useEffect, useReducer, useCallback } from 'react';
 import {AsyncStorage, ScrollView,View,ImageBackground,KeyboardAvoidingView,StyleSheet,Button,ActivityIndicator,Alert,Text,TouchableOpacity} from 'react-native';
 import { useDispatch } from 'react-redux';
 import {CLIENT_ID, TENANT_ID} from 'react-native-dotenv';
-import Input from '../../components/UI/Input';
-import Card from '../../components/UI/Card';
-import Colors from '../../constants/Colors';
+import Colors from '../constants/Colors';
 import * as authActions from '../actions/auth';
 
 import { AuthSession } from 'expo';
@@ -18,7 +16,7 @@ const AuthScreen = props => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const tryLogin = async () => 
+    const tryLogin = async () =>
     {
       //look for User Data in Storage
       const userData = await AsyncStorage.getItem('userData');
@@ -60,7 +58,7 @@ const AuthScreen = props => {
   const authHandler = async() => {
     setError(null);
     setIsLoading(true);
-    
+
     let action;
     let response;
 
@@ -73,28 +71,28 @@ const AuthScreen = props => {
     {
       setError(err.message);
     }
-   
+
     setIsLoading(false);
   };
 
   return (
               <View style={styles.screen}>
-                <ImageBackground source={require('../../assets/ball_field.jpg')} 
+                <ImageBackground source={require('../../assets/ball_field.jpg')}
                   style={styles.image}
                 >
                   <View style={styles.header}>
                     <Text style={styles.text}>SporSight Sports Analytics</Text>
                   </View>
-    
+
                   <View>
-                        {isLoading ? <ActivityIndicator size='large' color={Colors.Secondary}/> : 
+                        {isLoading ? <ActivityIndicator size='large' color={Colors.Secondary}/> :
                             <TouchableOpacity  style={styles.button} onPress={authHandler}>
                               <Text style={styles.buttonText}>Login</Text>
                             </TouchableOpacity>
                         }
                   </View>
-    
-                </ImageBackground> 
+
+                </ImageBackground>
               </View>
         );
 };

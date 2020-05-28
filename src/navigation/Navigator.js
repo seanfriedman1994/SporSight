@@ -9,12 +9,12 @@ import { Ionicons, FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 
-import AuthScreen from '../screens/user/AuthScreen';
-import VideoEstimationScreen, { screenOptions as VideoEstimationScreenOptions } from '../screens/video/VideoEstimationScreen';
-import VideoOverviewScreen, {screenOptions as VideoOverviewScreenOptions} from '../screens/video/VideoOverviewScreen';
-import VideoOptionsScreen, { screenOptions as VideoOptionsScreenOptions } from '../screens/video/VideoOptionsScreen';
+import AuthScreen from '../user/AuthScreen';
+import VideoEstimationScreen, { screenOptions as VideoEstimationScreenOptions } from '../video/VideoEstimationScreen';
+import VideoOverviewScreen, {screenOptions as VideoOverviewScreenOptions} from '../video/VideoOverviewScreen';
+import VideoOptionsScreen, { screenOptions as VideoOptionsScreenOptions } from '../video/VideoOptionsScreen';
 import Colors from '../constants/Colors';
-import * as authActions from '../screens/actions/auth';
+import * as authActions from '../actions/auth';
 
 const defaultNavOptions = {
     headerStyle: {
@@ -34,15 +34,15 @@ const VideoStackNavigator = createStackNavigator();
 export const VideoNavigator = () => {
     return (
         <VideoStackNavigator.Navigator initialRouteName = "VideoEstimation" screenOptions={defaultNavOptions}>
-            <VideoStackNavigator.Screen 
-                name="VideoEstimation" 
+            <VideoStackNavigator.Screen
+                name="VideoEstimation"
                 component={VideoEstimationScreen}
-                options={VideoEstimationScreenOptions} 
+                options={VideoEstimationScreenOptions}
             />
-            <VideoStackNavigator.Screen 
-                name="VideoOptions" 
+            <VideoStackNavigator.Screen
+                name="VideoOptions"
                 component={VideoOptionsScreen}
-                options={VideoOptionsScreenOptions} 
+                options={VideoOptionsScreenOptions}
             />
         </VideoStackNavigator.Navigator>
     );
@@ -53,10 +53,10 @@ const VideoOverviewStackNavigator = createStackNavigator();
 export const VideoOverviewNavigator = () => {
     return (
         <VideoOverviewStackNavigator.Navigator initialRouteName = "VideoOverview" screenOptions={defaultNavOptions}>
-            <VideoOverviewStackNavigator.Screen 
-                name="VideoOverview" 
+            <VideoOverviewStackNavigator.Screen
+                name="VideoOverview"
                 component={VideoOverviewScreen}
-                options={VideoOverviewScreenOptions} 
+                options={VideoOverviewScreenOptions}
             />
         </VideoOverviewStackNavigator.Navigator>
     );
@@ -80,9 +80,9 @@ export const Navigator = () => {
                                 onPress={() => {
                                     dispatch(authActions.logout());
                                 }}
-                                
+
                             /> */}
-                            <TouchableOpacity  
+                            <TouchableOpacity
                                 style={styles.button}
                                 onPress={() => {
                                     dispatch(authActions.logout());
@@ -98,9 +98,9 @@ export const Navigator = () => {
                 inactiveTintColor: 'white'
             }}
         >
-             <DrawerNavigator.Screen 
-                name="Video Annotation" 
-                component={VideoOverviewNavigator} 
+             <DrawerNavigator.Screen
+                name="Video Annotation"
+                component={VideoOverviewNavigator}
                 options={{
                     style: styles.navItem,
                     drawerIcon: props => (
@@ -112,9 +112,9 @@ export const Navigator = () => {
                     )
                 }}
             />
-            <DrawerNavigator.Screen 
-                name="Video Estimation" 
-                component={VideoNavigator} 
+            <DrawerNavigator.Screen
+                name="Video Estimation"
+                component={VideoNavigator}
                 options={{
                     style: styles.navItem,
                     drawerIcon: props => (
@@ -135,7 +135,7 @@ const AuthStackNavigator = createStackNavigator();
 export const AuthNavigator = () => {
     return (
         <AuthStackNavigator.Navigator initialRouteName = "Auth" screenOptions={{headerShown: false}}>
-            <AuthStackNavigator.Screen 
+            <AuthStackNavigator.Screen
                 name="Auth"
                 component={AuthScreen}/>
         </AuthStackNavigator.Navigator>

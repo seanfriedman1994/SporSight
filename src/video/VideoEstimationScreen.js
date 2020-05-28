@@ -12,9 +12,9 @@ import {
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
-import HeaderButton from "../../components/UI/HeaderButton";
-import Header from "../../components/UI/Header";
-import Colors from "../../constants/Colors";
+import HeaderButton from "../shared/components/HeaderButton";
+import Header from "../shared/components/Header";
+import Colors from "../constants/Colors";
 import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
@@ -66,17 +66,17 @@ export default class VideoEstimationScreen extends React.Component {
               title="Open Camera"
               onPress={this.openCamera}
             />
-          <Button 
+          <Button
             disabled={!this.state.image}
-            title="Estimate" 
+            title="Estimate"
             color={Colors.Primary}
-            onPress={this.estimate} 
+            onPress={this.estimate}
           />
-          <Button 
+          <Button
             disabled={!this.state.image}
-            title="Clear" 
+            title="Clear"
             color={Colors.Primary}
-            onPress={this.clear} 
+            onPress={this.clear}
           />
         </View>
         {image && (
@@ -85,7 +85,7 @@ export default class VideoEstimationScreen extends React.Component {
               <Image
                 source={{ uri: image.uri }}
                 style={{ width: 400, height: 400, position: "absolute", top: 0, bottom: 0, left: -200, right: 0 }}
-              />              
+              />
             </View>
             {poses && (
               <View>
@@ -97,10 +97,10 @@ export default class VideoEstimationScreen extends React.Component {
                 >
                   {this.renderJoints()}
                   {this.renderSkeleton()}
-                </Svg>  
+                </Svg>
               </View>
             )}
-            
+
           </View>
         )}
         {loading ? (
@@ -110,7 +110,7 @@ export default class VideoEstimationScreen extends React.Component {
         ) : prepping ? (
           <Text>
             Prepping...
-          </Text>     
+          </Text>
         ) : estimating ? (
           <Text>
             Estimating...
@@ -132,10 +132,10 @@ export default class VideoEstimationScreen extends React.Component {
       return pose.keypoints.map((keypoint, index) => {
         if (keypoint.score >= .8) {
           return (
-            <Circle key={index} r={3} cx={(keypoint.position.x)*(400/image.width)} cy={keypoint.position.y*(400/image.height)} fill="white"/> 
+            <Circle key={index} r={3} cx={(keypoint.position.x)*(400/image.width)} cy={keypoint.position.y*(400/image.height)} fill="white"/>
           )
         }
-      })      
+      })
     })
   }
 
@@ -145,7 +145,7 @@ export default class VideoEstimationScreen extends React.Component {
     return poses.map((pose) => {
       return skeletonPairs.map((pair, index) => {
         return (
-          <Line 
+          <Line
             key={index}
             x1={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[0])).position.x)*(400/image.width)}
             x2={((pose.keypoints.find(keypoint => keypoint.part == pair.pair[1])).position.x)*(400/image.width)}
@@ -155,7 +155,7 @@ export default class VideoEstimationScreen extends React.Component {
             strokeWidth="2"
           />
         )
-      })      
+      })
     })
   }
 
@@ -218,9 +218,9 @@ export default class VideoEstimationScreen extends React.Component {
       const net = await posenet.load({
           architecture: 'ResNet50',
           outputStride: 32,
-          quantBytes: 1 
+          quantBytes: 1
       });
-      
+
       this.setState({
         loading: false,
         prepping: true
@@ -228,8 +228,8 @@ export default class VideoEstimationScreen extends React.Component {
         console.log("2")
         const response = await fetch(this.state.image.uri, {}, { isBinary: true });
         const imageData = await response.arrayBuffer();
-        const imageTensor = this.imageToTensor(imageData)        
-      
+        const imageTensor = this.imageToTensor(imageData)
+
         this.setState({
           prepping: false,
           estimating: true
@@ -240,8 +240,8 @@ export default class VideoEstimationScreen extends React.Component {
           this.setState({
             estimating: false,
             poses
-          });          
-        })      
+          });
+        })
       })
     })
 
