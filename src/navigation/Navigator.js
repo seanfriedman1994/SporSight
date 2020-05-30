@@ -68,20 +68,23 @@ export const VideoNavigator = () => {
 
 const VideoOverviewStackNavigator = createStackNavigator();
 
-export const VideoOverviewNavigator = () => {
-	return (
-		<VideoOverviewStackNavigator.Navigator
-			initialRouteName="VideoOverview"
-			screenOptions={defaultNavOptions}
+export const VideoOverviewNavigator = ({
+	route: {
+		params: { uri, mediaType },
+	},
+}) => (
+	<VideoOverviewStackNavigator.Navigator
+		initialRouteName="VideoOverview"
+		screenOptions={defaultNavOptions}
+	>
+		<VideoOverviewStackNavigator.Screen
+			name="VideoOverview"
+			options={VideoOverviewScreenOptions}
 		>
-			<VideoOverviewStackNavigator.Screen
-				name="VideoOverview"
-				component={VideoOverviewScreen}
-				options={VideoOverviewScreenOptions}
-			/>
-		</VideoOverviewStackNavigator.Navigator>
-	);
-};
+			{() => <VideoOverviewScreen {...{ uri, mediaType }} />}
+		</VideoOverviewStackNavigator.Screen>
+	</VideoOverviewStackNavigator.Navigator>
+);
 
 const DrawerNavigator = createDrawerNavigator();
 
@@ -129,20 +132,20 @@ export const Navigator = () => {
 			<DrawerNavigator.Screen
 				name="Camera"
 				component={CameraPage}
-				// options={{
-				// 	style: styles.navItem,
-				// 	drawerIcon: props => (
-				// 		<Ionicons
-				// 			name={
-				// 				Platform.OS == 'android'
-				// 					? 'md-videocam'
-				// 					: 'ios-videocam'
-				// 			}
-				// 			size={23}
-				// 			color={props.focused ? Colors.Secondary : 'white'}
-				// 		/>
-				// 	),
-				// }}
+				options={{
+					style: styles.navItem,
+					drawerIcon: props => (
+						<Ionicons
+							name={
+								Platform.OS == 'android'
+									? 'md-videocam'
+									: 'ios-videocam'
+							}
+							size={23}
+							color={props.focused ? Colors.Secondary : 'white'}
+						/>
+					),
+				}}
 			/>
 			<DrawerNavigator.Screen
 				name="Video Annotation"
