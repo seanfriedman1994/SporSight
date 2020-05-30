@@ -3,10 +3,11 @@ import { View, Platform, StyleSheet, Dimensions } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import HeaderButton from '../shared/components/HeaderButton';
 import { Video } from 'expo-av';
+import { get } from 'lodash/fp';
 
 // import SampleVideo from '../../../assets/sample_video/IMG-2761.MP4'
 const { width, height } = Dimensions.get('window');
-const VideoOverviewScreen = props => {
+const VideoOverviewScreen = ({ uri }) => {
 	return (
 		<View>
 			<Video
@@ -15,11 +16,7 @@ const VideoOverviewScreen = props => {
 					justifyContent: 'flex-start',
 					alignItems: 'center',
 				}}
-				source={{
-					uri:
-						'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-				}}
-				// source={SampleVideo}
+				source={{ uri }}
 				rate={1.0}
 				volume={1.0}
 				isMuted={false}
