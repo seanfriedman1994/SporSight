@@ -29,6 +29,7 @@ import VideoOptionsScreen, {
 } from '../video/VideoOptionsScreen';
 import Colors from '../constants/Colors';
 import * as authActions from '../actions/auth';
+import CameraPage from '../video/CameraPage';
 
 const defaultNavOptions = {
 	headerStyle: {
@@ -89,6 +90,7 @@ export const Navigator = () => {
 
 	return (
 		<DrawerNavigator.Navigator
+			initialRouteName="Camera"
 			drawerContent={props => {
 				return (
 					<View
@@ -124,6 +126,24 @@ export const Navigator = () => {
 				inactiveTintColor: 'white',
 			}}
 		>
+			<DrawerNavigator.Screen
+				name="Camera"
+				component={CameraPage}
+				// options={{
+				// 	style: styles.navItem,
+				// 	drawerIcon: props => (
+				// 		<Ionicons
+				// 			name={
+				// 				Platform.OS == 'android'
+				// 					? 'md-videocam'
+				// 					: 'ios-videocam'
+				// 			}
+				// 			size={23}
+				// 			color={props.focused ? Colors.Secondary : 'white'}
+				// 		/>
+				// 	),
+				// }}
+			/>
 			<DrawerNavigator.Screen
 				name="Video Annotation"
 				component={VideoOverviewNavigator}
