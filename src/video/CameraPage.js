@@ -49,7 +49,7 @@ class CameraPage extends Component {
 		if (this.camera) {
 			let photo = await this.camera.takePictureAsync();
 			MediaLibrary.saveToLibraryAsync(photo.uri);
-			this.props.navigation.navigate('Video Annotation', {
+			this.props.navigation.navigate('Video Estimation', {
 				mediaType: 'photo',
 				uri: photo.uri,
 			});
