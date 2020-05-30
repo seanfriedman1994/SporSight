@@ -49,6 +49,7 @@ class CameraPage extends Component {
 		if (this.camera) {
 			let photo = await this.camera.takePictureAsync();
 			MediaLibrary.saveToLibraryAsync(photo.uri);
+			this.props.navigation.navigate('Video Annotation');
 			console.log('Photo', photo);
 		}
 	};
@@ -58,6 +59,7 @@ class CameraPage extends Component {
 			this.setState(oldState => ({ ...oldState, isRecording: true }));
 			let video = await this.camera.recordAsync();
 			MediaLibrary.saveToLibraryAsync(video.uri);
+			this.props.navigation.navigate('Video Annotation');
 			console.log('Video', video);
 		}
 	};
