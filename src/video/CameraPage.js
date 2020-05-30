@@ -50,7 +50,7 @@ class CameraPage extends Component {
 			let photo = await this.camera.takePictureAsync();
 			MediaLibrary.saveToLibraryAsync(photo.uri);
 			this.props.navigation.navigate('Video Annotation', {
-				mediaType: 'photo',
+				mediaType: 'image',
 				uri: photo.uri,
 			});
 			console.log('Photo', photo);
@@ -76,9 +76,18 @@ class CameraPage extends Component {
 	};
 
 	pickImage = async () => {
-		let result = await ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+		const mediaInfo = await ImagePicker.launchImageLibraryAsync({
+			mediaTypes: ImagePicker.MediaTypeOptions.All,
 		});
+		console.log(mediaInfo);
+		const { type, uri } = mediaInfo;
+		setTimeout(
+			this.props.navigation.navigate('Video Annotation', {
+				mediaType: type,
+				uri,
+			}),
+			500
+		);
 	};
 
 	render() {
