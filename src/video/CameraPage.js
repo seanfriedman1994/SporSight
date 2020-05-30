@@ -81,13 +81,10 @@ class CameraPage extends Component {
 		});
 		console.log(mediaInfo);
 		const { type, uri } = mediaInfo;
-		setTimeout(
-			this.props.navigation.navigate('Video Annotation', {
-				mediaType: type,
-				uri,
-			}),
-			500
-		);
+		this.props.navigation.navigate('Video Annotation', {
+			mediaType: type,
+			uri,
+		});
 	};
 
 	render() {
