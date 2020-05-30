@@ -23,23 +23,15 @@ class CameraPage extends Component {
 	}
 
 	getPermissionAsync = async () => {
-		// Camera roll Permission
-		if (Platform.OS === 'ios') {
-			const { status } = await Permissions.askAsync(
-				Permissions.CAMERA_ROLL
-			);
-			if (status !== 'granted') {
-				alert(
-					'Sorry, we need camera roll permissions to make this work!'
-				);
-			}
-		}
-		// Camera Permission
 		const { status } = await Permissions.askAsync(
+			Permissions.CAMERA_ROLL,
 			Permissions.CAMERA,
 			Permissions.AUDIO_RECORDING
 		);
-		this.setState({ hasPermission: status === 'granted' });
+
+		status !== 'granted'
+			? alert('Sorry, we need camera roll permissions to make this work!')
+			: this.setState({ hasPermission: status === 'granted' });
 	};
 
 	handleCameraType = () => {
