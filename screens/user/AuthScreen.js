@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useCallback } from 'react';
+import React, { useState, useEffect, useReducer, useCallback, useRef } from 'react';
 import {AsyncStorage, ScrollView,View,ImageBackground,KeyboardAvoidingView,StyleSheet,Button,ActivityIndicator,Alert,Text,TouchableOpacity} from 'react-native';
 import { useDispatch } from 'react-redux';
 import {CLIENT_ID, TENANT_ID} from 'react-native-dotenv';
@@ -10,14 +10,18 @@ import * as authActions from '../actions/auth';
 import { AuthSession } from 'expo';
 import { openAuthSession } from 'azure-ad-graph-expo';
 import { render } from 'react-dom';
+import { add } from '@tensorflow/tfjs';
+import { UserExists, GetUser } from '../../helpers/db';
 
 const AuthScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
+  const isMountedRef = useRef(null);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
+    isMountedRef.current = true;
     const tryLogin = async () => 
     {
       //look for User Data in Storage
@@ -41,7 +45,27 @@ const AuthScreen = props => {
         else
         {
           //valid user object, already signed in.
-          dispatch(authActions.authenticate(userId, displayName, token, refreshToken, expiryTime));
+          if(isMountedRef.current){
+            dispatch(authActions.authenticate(userId, displayName, token, refreshToken, expiryTime));
+          }
+
+          let user = GetUser(userId);
+
+          if(user == null)
+          {
+            console.log("user is null");
+          }
+          else
+          {
+            console.log(JSON.stringify(user));
+          }
+
+          return () =>  isMountedRef.current = false;
+          // if(!UserExists(userId))
+          // {
+          //   AddUser();
+          // }
+
         }
       }
 
@@ -51,9 +75,11 @@ const AuthScreen = props => {
   }, [dispatch]);
 
   useEffect(() => {
-    if(error) {
+    if(error &&  isMountedRef.current) {
       Alert.alert('An Error Occured.', error , [{text: 'Okay'}]);
     }
+
+    return () =>  isMountedRef.current = false;
   }, [error]
   );
 
@@ -66,15 +92,48 @@ const AuthScreen = props => {
 
     try
     {
-      action = await authActions.loginAsync();
-      response = await dispatch(action);
+
+      if(isMountedRef.current) {
+        action = await authActions.loginAsync();
+        response = await dispatch(action);
+
+        //look for User Data in Storage
+    const userData = await AsyncStorage.getItem('userData');
+
+    if(userData)
+    {
+      //create object from storage string
+      const transformedData = JSON.parse(userData);
+
+      //deconstruct the JSON object
+      const {userId, displayName, token, refreshToken, expiryDate} = transformedData;
+      
+      console.log(userId);
+      // let user = GetUser(userId);
+
+      // if(user == null)
+      // {
+      //   console.log("user is null");
+      // }
+      // else
+      // {
+      //   console.log(user.Id);
+      // }
+    }
+      }
+  
     }
     catch(err)
     {
       setError(err.message);
+      setIsLoading(false);
+      return;
     }
    
-    setIsLoading(false);
+    isMountedRef.current = false;
+
+    
+    
   };
 
   return (
