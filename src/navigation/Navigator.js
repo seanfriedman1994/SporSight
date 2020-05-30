@@ -129,20 +129,20 @@ export const Navigator = () => {
 			<DrawerNavigator.Screen
 				name="Camera"
 				component={CameraPage}
-				// options={{
-				// 	style: styles.navItem,
-				// 	drawerIcon: props => (
-				// 		<Ionicons
-				// 			name={
-				// 				Platform.OS == 'android'
-				// 					? 'md-videocam'
-				// 					: 'ios-videocam'
-				// 			}
-				// 			size={23}
-				// 			color={props.focused ? Colors.Secondary : 'white'}
-				// 		/>
-				// 	),
-				// }}
+				options={{
+					style: styles.navItem,
+					drawerIcon: props => (
+						<Ionicons
+							name={
+								Platform.OS == 'android'
+									? 'md-videocam'
+									: 'ios-videocam'
+							}
+							size={23}
+							color={props.focused ? Colors.Secondary : 'white'}
+						/>
+					),
+				}}
 			/>
 			<DrawerNavigator.Screen
 				name="Video Annotation"
