@@ -119,22 +119,10 @@ class CameraPage extends Component {
 							style={{
 								flex: 1,
 								flexDirection: 'row',
-								justifyContent: 'space-between',
+								justifyContent: 'flex-end',
 								margin: 30,
 							}}
 						>
-							<TouchableOpacity
-								style={{
-									alignItems: 'center',
-									backgroundColor: 'transparent',
-								}}
-								onPress={() => this.props.closeCameraPage()}
-							>
-								<FontAwesome
-									name="arrow-left"
-									style={{ color: '#fff', fontSize: 40 }}
-								/>
-							</TouchableOpacity>
 							<TouchableOpacity
 								style={{
 									alignItems: 'center',
