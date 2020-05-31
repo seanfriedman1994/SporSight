@@ -104,14 +104,6 @@ export const Navigator = () => {
 							forceInset={{ top: 'always', horizontal: 'never' }}
 						>
 							<DrawerItemList {...props} />
-							{/* <Button
-                                title="Logout"
-                                color={Colors.Secondary}
-                                onPress={() => {
-                                    dispatch(authActions.logout());
-                                }}
-
-                            /> */}
 							<TouchableOpacity
 								style={styles.button}
 								onPress={() => {

@@ -1,14 +1,23 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, Image } from 'react-native';
+import {
+	Text,
+	View,
+	TouchableOpacity,
+	Image,
+	StyleSheet,
+	Platform,
+} from 'react-native';
 import { Camera } from 'expo-camera';
 import * as Permissions from 'expo-permissions';
 import {
 	FontAwesome,
 	Ionicons,
 	MaterialCommunityIcons,
+	MaterialIcons,
 } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
+import Torch from 'react-native-torch';
 
 class CameraPage extends Component {
 	state = {
@@ -16,7 +25,10 @@ class CameraPage extends Component {
 		inVideoMode: false,
 		hasPermission: null,
 		cameraType: Camera.Constants.Type.back,
+		flashMode: Camera.Constants.FlashMode.off,
 	};
+
+	setFlashMode = flashMode => this.setState({ flashMode });
 
 	async componentDidMount() {
 		this.getPermissionAsync();
@@ -59,7 +71,11 @@ class CameraPage extends Component {
 
 	takeVideo = async () => {
 		if (this.camera) {
-			this.setState(oldState => ({ ...oldState, isRecording: true }));
+			this.setState(oldState => ({
+				...oldState,
+				isRecording: true,
+			}));
+
 			let video = await this.camera.recordAsync();
 			MediaLibrary.saveToLibraryAsync(video.uri);
 			this.props.navigation.navigate('Video Annotation', {
@@ -72,7 +88,10 @@ class CameraPage extends Component {
 
 	stopVideo = async () => {
 		this.camera.stopRecording();
-		this.setState(oldState => ({ ...oldState, isRecording: false }));
+		this.setState(oldState => ({
+			...oldState,
+			isRecording: false,
+		}));
 	};
 
 	pickImage = async () => {
@@ -82,12 +101,31 @@ class CameraPage extends Component {
 	};
 
 	render() {
-		const { hasPermission } = this.state;
+		const { hasPermission, flashMode, cameraType, capturing } = this.state;
 		if (hasPermission === null) {
 			return <View />;
 		} else if (hasPermission === false) {
 			return <Text>No access to camera</Text>;
 		} else {
+			const getFlashIcon = () => {
+				if (Platform.OS === 'ios') {
+					if (
+						this.state.flashMode === Camera.Constants.FlashMode.on
+					) {
+						return 'ios-flash';
+					} else {
+						return 'ios-flash-off';
+					}
+				} else {
+					if (
+						this.state.flashMode === Camera.Constants.FlashMode.on
+					) {
+						return 'md-flash';
+					} else {
+						return 'md-flash-off';
+					}
+				}
+			};
 			const getPrimaryIcon = () => {
 				if (!this.state.inVideoMode) {
 					return 'camera';
@@ -110,7 +148,8 @@ class CameraPage extends Component {
 				<View style={{ flex: 1 }}>
 					<Camera
 						style={{ flex: 1 }}
-						type={this.state.cameraType}
+						type={cameraType}
+						flashMode={flashMode}
 						ref={ref => {
 							this.camera = ref;
 						}}
@@ -119,10 +158,41 @@ class CameraPage extends Component {
 							style={{
 								flex: 1,
 								flexDirection: 'row',
-								justifyContent: 'flex-end',
+								justifyContent: this.state.inVideoMode
+									? 'flex-end'
+									: 'space-between',
 								margin: 30,
+								marginTop: 55,
 							}}
 						>
+							{!this.state.inVideoMode && (
+								<TouchableOpacity
+									style={{
+										alignItems: 'center',
+										backgroundColor: 'transparent',
+									}}
+									onPress={() =>
+										this.state.flashMode ===
+										Camera.Constants.FlashMode.off
+											? this.setState({
+													flashMode:
+														Camera.Constants
+															.FlashMode.on,
+											  })
+											: this.setState({
+													flashMode:
+														Camera.Constants
+															.FlashMode.off,
+											  })
+									}
+								>
+									<Ionicons
+										name={getFlashIcon()}
+										style={{ color: '#fff', fontSize: 30 }}
+									/>
+								</TouchableOpacity>
+							)}
+
 							<TouchableOpacity
 								style={{
 									alignItems: 'center',
@@ -141,7 +211,7 @@ class CameraPage extends Component {
 											? 'video-camera'
 											: 'camera'
 									}
-									style={{ color: '#fff', fontSize: 40 }}
+									style={{ color: '#fff', fontSize: 30 }}
 								/>
 							</TouchableOpacity>
 						</View>
@@ -151,6 +221,7 @@ class CameraPage extends Component {
 								flexDirection: 'row',
 								justifyContent: 'space-between',
 								margin: 30,
+								marginBottom: 40,
 							}}
 						>
 							<TouchableOpacity
@@ -201,3 +272,28 @@ class CameraPage extends Component {
 }
 
 export default CameraPage;
+
+const styles = StyleSheet.create({
+	recordButton: {
+		height: 72,
+		width: 72,
+		borderWidth: 5,
+		borderColor: 'red',
+		borderRadius: 36,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	record: {
+		height: 56,
+		width: 56,
+		borderRadius: 28,
+		backgroundColor: 'blue',
+	},
+	smallCircle: {
+		height: 8,
+		width: 8,
+		borderRadius: 4,
+		marginRight: 2,
+		backgroundColor: 'green',
+	},
+});
