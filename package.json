@@ -23,7 +23,7 @@
 		"expo": "~36.0.0",
 		"expo-av": "~8.0.0",
 		"expo-camera": "~8.0.0",
-		"expo-cli": "^3.21.3",
+		"expo-cli": "^6.0.6",
 		"expo-constants": "^8.0.0",
 		"expo-font": "~8.0.0",
 		"expo-gl": "^8.2.0",
